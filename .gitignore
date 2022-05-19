@@ -1,3 +1,6 @@
 env/
 .vscode/
 
+.~lock.wine2.xlsx\#
+__pycache__/main.cpython-38.pyc
+__pycache__/pandas.cpython-38.pyc
