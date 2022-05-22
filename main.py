@@ -2,12 +2,23 @@ from http.server import HTTPServer, SimpleHTTPRequestHandler
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
+from collections import defaultdict
+
 import datetime
 
 import pandas
 
-excel_data_df = pandas.read_excel("wine.xlsx")
+#reading xls file to dataframe
+excel_data_df = pandas.read_excel("wine3.xlsx",
+    na_values="None", 
+    keep_default_na=False)
 wines_list = excel_data_df.to_dict('records')
+
+#create dictonary of goods
+wines = defaultdict(list)
+for rec in wines_list:
+    key = rec["Категория"]
+    wines[key].append(rec)
 
 begin = datetime.datetime(year=1920, month=1, day=1)
 now = datetime.date.today()
@@ -29,7 +40,7 @@ template = env.get_template('template.html')
 
 rendered_page = template.render(
     age = delta,
-    wines = wines_list,
+    wines = wines,
     word = year_word
 )
 
