@@ -8,13 +8,11 @@ import datetime
 
 import pandas
 
-#reading xls file to dataframe
 excel_data_df = pandas.read_excel("wine3.xlsx",
     na_values="None", 
     keep_default_na=False)
 wines_list = excel_data_df.to_dict('records')
 
-#create dictonary of goods
 wines = defaultdict(list)
 for rec in wines_list:
     key = rec["Категория"]
