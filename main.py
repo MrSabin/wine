@@ -1,49 +1,57 @@
+import argparse
+import datetime
+import os
+from collections import defaultdict
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 
+import pandas
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-from collections import defaultdict
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--path', help = 'Путь к файлу',
+        default = os.path.join(os.getcwd(), 'wines_table.xlsx'))
+    args = parser.parse_args()
 
-import datetime
+    excel_data_df = pandas.read_excel(args.path,
+        na_values="None", 
+        keep_default_na=False)
+    wines_data = excel_data_df.to_dict('records')
 
-import pandas
+    wines = defaultdict(list)
+    for item in wines_data:
+        key = item["Категория"]
+        wines[key].append(item)
 
-excel_data_df = pandas.read_excel("wine3.xlsx",
-    na_values="None", 
-    keep_default_na=False)
-wines_list = excel_data_df.to_dict('records')
+    foundation_date = datetime.datetime(year=1920, month=1, day=1)
+    today = datetime.date.today()
+    delta = today.year - foundation_date.year
 
-wines = defaultdict(list)
-for rec in wines_list:
-    key = rec["Категория"]
-    wines[key].append(rec)
+    if (delta%10 == 1) and (delta != 11) and (delta != 111):
+       year_word = "год"
+    elif (delta%10 > 1) and (delta%10 < 5) and (delta != 12) and (delta != 13) and (delta != 14):
+       year_word = "года"
+    else:
+       year_word = "лет"
 
-begin = datetime.datetime(year=1920, month=1, day=1)
-now = datetime.date.today()
-delta = now.year - begin.year
+    env = Environment(
+        loader=FileSystemLoader('.'),
+        autoescape=select_autoescape(['html', 'xml'])
+    )
 
-if (delta%10 == 1) and (delta != 11) and (delta != 111):
-   year_word = "год"
-elif (delta%10 > 1) and (delta%10 < 5) and (delta != 12) and (delta != 13) and (delta != 14):
-   year_word = "года"
-else:
-   year_word = "лет"
+    template = env.get_template('template.html')
 
-env = Environment(
-    loader=FileSystemLoader('.'),
-    autoescape=select_autoescape(['html', 'xml'])
-)
+    rendered_page = template.render(
+        age = delta,
+        wines = wines,
+        word = year_word
+    )
 
-template = env.get_template('template.html')
+    with open('index.html', 'w', encoding="utf8") as file:
+        file.write(rendered_page)
 
-rendered_page = template.render(
-    age = delta,
-    wines = wines,
-    word = year_word
-)
+    server = HTTPServer(('0.0.0.0', 8000), SimpleHTTPRequestHandler)
+    #server.serve_forever()
 
-with open('index.html', 'w', encoding="utf8") as file:
-    file.write(rendered_page)
-
-server = HTTPServer(('0.0.0.0', 8000), SimpleHTTPRequestHandler)
-server.serve_forever()
+if __name__ == '__main__':
+    main()
