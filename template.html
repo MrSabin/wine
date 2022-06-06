@@ -112,11 +112,11 @@
             <p>Вино — один из самых благородных и многогранных напитков в мире! Виноделие берёт своё начало с незапамятных времён. Вино упоминается в Библии и Коране, греческой и римской мифологии, где были свои боги вина (к примеру, Дионис). Стоит отметить, что почти у каждого народа существует своя легенда, повествующая о появлении божественного эликсира — вина.
             </p>
           </div>
-          {% for key, value in wines.items() %}
+          {% for product, description in wines.items() %}
             <div class="col-12 section-title text-center mb-5">
-              <h2 class="d-block">{{ key }}</h2>
+              <h2 class="d-block">{{ product }}</h2>
             </div>
-            {% for wine in value %}
+            {% for wine in description %}
               <div class="col-lg-4 mb-5 col-md-6">
                 <div class="wine_v_1 text-center pb-4 pt-5">
                   <img src="images/{{wine.Картинка}}" alt="..." class="img-fluid">
@@ -148,7 +148,7 @@
         <div class="row justify-content-center text-center align-items-center">
           <div class="col-md-8">
             <h2 style="font-size: 3rem;">проверено временем</h2>
-            <span class="sub-title" style="font-size: 2.5rem;">Уже {{age}} {{word}} с вами</span>
+            <span class="sub-title" style="font-size: 2.5rem;">Уже {{age}} {{suffix}} с вами</span>
           </div>
         </div>
       </div>

@@ -16,23 +16,23 @@ def main():
     excel_data_df = pandas.read_excel(args.path,
         na_values="None", 
         keep_default_na=False)
-    wines_data = excel_data_df.to_dict('records')
+    assortment = excel_data_df.to_dict('records')
 
     wines = defaultdict(list)
-    for item in wines_data:
-        key = item["Категория"]
-        wines[key].append(item)
+    for product in assortment:
+        key = product["Категория"]
+        wines[key].append(product)
 
     foundation_date = datetime.datetime(year=1920, month=1, day=1)
     today = datetime.date.today()
-    delta = today.year - foundation_date.year
+    winery_age = today.year - foundation_date.year
 
-    if (delta%10 == 1) and (delta != 11) and (delta != 111):
-       year_word = "год"
-    elif (delta%10 > 1) and (delta%10 < 5) and (delta != 12) and (delta != 13) and (delta != 14):
-       year_word = "года"
+    if (winery_age%10 == 1) and (winery_age != 11) and (winery_age != 111):
+        suffix = "год"
+    elif (winery_age%10 > 1) and (winery_age%10 < 5) and (winery_age != 12) and (winery_age != 13) and (winery_age != 14):
+        suffix = "года"
     else:
-       year_word = "лет"
+        suffix = "лет"
 
     env = Environment(
         loader=FileSystemLoader('.'),
@@ -42,9 +42,9 @@ def main():
     template = env.get_template('template.html')
 
     rendered_page = template.render(
-        age = delta,
+        age = winery_age,
         wines = wines,
-        word = year_word
+        suffix = suffix
     )
 
     with open('index.html', 'w', encoding="utf8") as file:
