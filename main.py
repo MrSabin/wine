@@ -51,7 +51,7 @@ def main():
         file.write(rendered_page)
 
     server = HTTPServer(('0.0.0.0', 8000), SimpleHTTPRequestHandler)
-    #server.serve_forever()
+    server.serve_forever()
 
 if __name__ == '__main__':
     main()
